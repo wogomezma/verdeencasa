@@ -28,6 +28,9 @@ function Producto(id, nombre, precio) {
   productos.push({id: this.id, nombre: this.nombre, precio: this.precio });
 }
 
+
+
+
 const indiceold = localStorage.getItem("indice")
 
 const producto1 = new Producto(1, "Infusion Relajante", 10);
@@ -187,17 +190,29 @@ button.onclick = function click() {
             }
 
             break;
-        case 1:
+        case 1: 
+        /*OPTIMIZACION CON DESESRUCTURACION y SPREAD*/
+          const [,productoventa] = productos
+          console.log(productoventa);
+          const datosventa = {
+            ...precioventa,
+            diasventa: dias,
+            recetaventa: infurelajante(dias, veces),
+            vecesventa: veces,
+          }
+          const {id:idventa, nombre:nombreventa, precio:precioventa} = productoventa
+          console.log(datosventa);
+          console.log(idventa, nombreventa, precioventa);
           receta = infurelajante(dias, veces)
-          precio = compra(producto2.precio, receta)
-          console.log("Calculado receta de " + producto2.nombre + " para " + dias + " dias, con " + veces + " veces al dia");
+          precio = compra(precioventa, receta)
+          console.log("Calculado receta de " + nombreventa + " para " + dias + " dias, con " + veces + " veces al dia");
           console.log("hola, calculamos que necesitaras " + receta + "gramos");
           console.log("el valor con envio es de $" + precio);
           let contenedo5 = document.getElementById("container");
           contenedo5.innerHTML = "";
           let contenedo6 = document.createElement("div");
           contenedo6.innerHTML = `
-          <h3>Calculado receta de ${producto2.nombre} para ${dias} dias, con ${veces} veces al dia</h3>
+          <h3>Calculado receta de ${nombreventa} para ${dias} dias, con ${veces} veces al dia</h3>
           <div class="card-body">
           <p>hola, calculamos que necesitaras ${receta} gramos</p>
           <p>el valor con envio es de $${precio}</p>
@@ -325,7 +340,34 @@ button.onclick = function click() {
     };
   };
 
-  if (indiceold === null) {
+/* OPTIMIZACON CODIGO */
+
+  indiceold === null ? dibujarProductos() : carritolleno()
+
+
+    function carritolleno () {
+    indice = indiceold
+    switch (indiceold) {
+      case "0":
+         productoold = "Infusion Relajante (Producto en carrito pendiente para finalizar)"
+        break;
+      case "1":
+        productoold = "Infusion Digestiva (Producto en carrito pendiente para finalizar)"
+        break;
+      case "2":
+          productoold = "Infusion Antioxidante (Producto en carrito pendiente para finalizar)"
+        break;  
+      default:
+        console.log("error conversion text a number");
+        break;
+    }
+    localStorage.removeItem("indice")
+    console.log("carro con productos");
+    console.log(indice);
+    agregarAlCarrito(indice)
+    localStorage.setItem("indice", indice) }
+
+/*   if (indiceold === null) {
     console.log("carro vacio")
     dibujarProductos()
   }
@@ -352,7 +394,7 @@ button.onclick = function click() {
   localStorage.setItem("indice", indice)
 
 
-  };
+  }; */
 
 
  
