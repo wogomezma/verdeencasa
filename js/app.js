@@ -194,13 +194,14 @@ button.onclick = function click() {
         /*OPTIMIZACION CON DESESRUCTURACION y SPREAD*/
           const [,productoventa] = productos
           console.log(productoventa);
+          const {id:idventa, nombre:nombreventa, precio:precioventa} = productoventa
           const datosventa = {
             ...precioventa,
             diasventa: dias,
             recetaventa: infurelajante(dias, veces),
             vecesventa: veces,
           }
-          const {id:idventa, nombre:nombreventa, precio:precioventa} = productoventa
+          
           console.log(datosventa);
           console.log(idventa, nombreventa, precioventa);
           receta = infurelajante(dias, veces)
