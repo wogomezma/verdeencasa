@@ -147,9 +147,11 @@ button.onclick = function click() {
 
             const button2 = document.getElementById('comprar');
             button2.onclick = function click() {
+
+              
               cart.push({ productocomprado: producto1.nombre, valor: precio });
               
-              console.log(cart);
+              console.log("compra de carrito:",cart);
 
               let contened = document.getElementById("cart");
               contened.innerHTML = "";
@@ -165,6 +167,10 @@ button.onclick = function click() {
                       `;
                   card2.innerHTML = html;
                   contened.appendChild(card2);
+
+                  /*LIBRERIA sweetalert2*/
+                  Swal.fire('<h3>COMPRA REALIZADA</h3>')
+
                   localStorage.removeItem("indice")
                   dibujarProductos()
        
@@ -175,8 +181,20 @@ button.onclick = function click() {
             
             const button5 = document.getElementById('nocomprar');
             button5.onclick = function click() {
+              /*LIBRERIA sweetalert2*/
+              Swal.fire({
+                title: 'Cancelar Compra',
+                text: "Estas seguro que deseas cancelar la compra",
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#3085d6',
+                cancelButtonColor: '#d33',
+                confirmButtonText: 'Si, Cancelar Compra'
+              }).then((result) => {
+                if (result.isConfirmed) {
               cart.splice(0);
-              localStorage.removeItem("indice")
+              localStorage.removeItem("indice");
+              console.log("borrando localstorage",indice);
               let contened2 = document.getElementById("cart");
               contened2.innerHTML = "";
               let card2 = document.createElement("div");
@@ -187,6 +205,12 @@ button.onclick = function click() {
                   card2.innerHTML = html;
                   contened2.appendChild(card2);
               dibujarProductos()
+                  Swal.fire(
+                    'Compra Cancelada'
+                  )               
+                }
+              })
+              
             }
 
             break;
