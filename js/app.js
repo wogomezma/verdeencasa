@@ -20,6 +20,7 @@ function compra(preciogramo, receta) {
 /* PRODUCTOS */
 
 const productos = [];
+const producto = {};
 
 function Producto(id, nombre, precio) {
   this.id = id;
@@ -33,9 +34,34 @@ function Producto(id, nombre, precio) {
 
 const indiceold = localStorage.getItem("indice")
 
-const producto1 = new Producto(1, "Infusion Relajante", 10);
+/* const producto1 = new Producto(1, "Infusion Relajante", 10);
 const producto2 = new Producto(2, "Infusion Digestiva", 20);
-const producto3 = new Producto(3, "Infusion Antioxidante", 30);
+const producto3 = new Producto(3, "Infusion Antioxidante", 30); */
+
+/* FETCH */
+
+const traerdatos = async()=>{
+  const respuesta = await fetch("js/productos.json")
+  const data = await respuesta.json()
+
+  console.log("data",data);
+
+
+data.forEach((post)=>{
+Producto(post.id,post.nombre,post.precio)
+dibujarProductos()
+})
+}
+
+traerdatos();
+
+
+
+
+console.log("productos:", productos);
+
+
+
 let cart = [];
 let carro = []
 let productoold = "INFUSION"
@@ -126,16 +152,17 @@ button.onclick = function click() {
 
       switch (option) {
         case 0:
+            let productocomprad = productos[0]
             receta = infurelajante(dias, veces)
-            precio = compra(producto1.precio, receta)
-            console.log("Calculado receta de " + producto1.nombre + " para " + dias + " dias, con " + veces + " veces al dia");
+            precio = compra(productocomprad.precio, receta)
+            console.log("Calculado receta de " + productocomprad.nombre + " para " + dias + " dias, con " + veces + " veces al dia");
             console.log("hola, calculamos que necesitaras " + receta + "gramos");
             console.log("el valor con envio es de $" + precio);
             let contenedo3 = document.getElementById("container");
             contenedo3.innerHTML = "";
             let contenedo4 = document.createElement("div");
             contenedo4.innerHTML = `
-            <h3>Calculado receta de ${producto1.nombre} para ${dias} dias, con ${veces} veces al dia</h3>
+            <h3>Calculado receta de ${productocomprad.nombre} para ${dias} dias, con ${veces} veces al dia</h3>
             <div class="card-body">
             <p>hola, calculamos que necesitaras ${receta} gramos</p>
             <p>el valor con envio es de $${precio}</p>
@@ -149,7 +176,7 @@ button.onclick = function click() {
             button2.onclick = function click() {
 
               
-              cart.push({ productocomprado: producto1.nombre, valor: precio });
+              cart.push({ productocomprado: productocomprad.nombre, valor: precio });
               
               console.log("compra de carrito:",cart);
 
@@ -215,6 +242,7 @@ button.onclick = function click() {
 
             break;
         case 1: 
+        let productocomprad2 = productos[1]
         /*OPTIMIZACION CON DESESRUCTURACION y SPREAD*/
           const [,productoventa] = productos
           console.log(productoventa);
@@ -249,7 +277,7 @@ button.onclick = function click() {
 
           const button3 = document.getElementById('comprar');
           button3.onclick = function click() {
-            cart.push({ productocomprado: producto2.nombre, valor: precio });
+            cart.push({ productocomprado: productocomprad2.nombre, valor: precio });
             
             console.log(cart);
 
@@ -292,16 +320,17 @@ button.onclick = function click() {
 
             break;
         case 2:
+          let productocomprad3 = productos[2]
           receta = infurelajante(dias, veces)
-          precio = compra(producto3.precio, receta)
-          console.log("Calculado receta de " + producto3.nombre + " para " + dias + " dias, con " + veces + " veces al dia");
+          precio = compra(productocomprad3.precio, receta)
+          console.log("Calculado receta de " + productocomprad3.nombre + " para " + dias + " dias, con " + veces + " veces al dia");
           console.log("hola, calculamos que necesitaras " + receta + "gramos");
           console.log("el valor con envio es de $" + precio);
           let contenedo7 = document.getElementById("container");
           contenedo7.innerHTML = "";
           let contenedo8 = document.createElement("div");
           contenedo8.innerHTML = `
-          <h3>Calculado receta de ${producto3.nombre} para ${dias} dias, con ${veces} veces al dia</h3>
+          <h3>Calculado receta de ${productocomprad3.nombre} para ${dias} dias, con ${veces} veces al dia</h3>
           <div class="card-body">
           <p>hola, calculamos que necesitaras ${receta} gramos</p>
           <p>el valor con envio es de $${precio}</p>
@@ -313,7 +342,7 @@ button.onclick = function click() {
 
           const button4 = document.getElementById('comprar');
           button4.onclick = function click() {
-            cart.push({ productocomprado: producto3.nombre, valor: precio });
+            cart.push({ productocomprado: productocomprad3.nombre, valor: precio });
             
             console.log(cart);
 
