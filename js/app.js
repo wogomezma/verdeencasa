@@ -34,23 +34,46 @@ function Producto(id, nombre, precio) {
 
 const indiceold = localStorage.getItem("indice")
 
-/* const producto1 = new Producto(1, "Infusion Relajante", 10);
-const producto2 = new Producto(2, "Infusion Digestiva", 20);
-const producto3 = new Producto(3, "Infusion Antioxidante", 30); */
 
-/* FETCH */
+
+/* FETCH para importar Productos*/
 
 const traerdatos = async()=>{
   const respuesta = await fetch("js/productos.json")
   const data = await respuesta.json()
 
-  console.log("data",data);
-
-
 data.forEach((post)=>{
 Producto(post.id,post.nombre,post.precio)
-dibujarProductos()
+
+
 })
+
+/* Validacion de carrito lleno por localstorage*/
+
+indiceold === null ? dibujarProductos() : carritolleno()
+
+
+    function carritolleno () {
+    indice = indiceold
+    switch (indiceold) {
+      case "0":
+         productoold = "Infusion Relajante (Producto en carrito pendiente para finalizar)"
+         break;
+      case "1":
+        productoold = "Infusion Digestiva (Producto en carrito pendiente para finalizar)"
+        break;
+      case "2":
+          productoold = "Infusion Antioxidante (Producto en carrito pendiente para finalizar)"
+          break;  
+      default:
+        console.log("ultimo: error conversion text a number");
+        break;
+    }
+    localStorage.removeItem("indice")
+    agregarAlCarrito(indice)
+    localStorage.setItem("indice", indice) }
+
+
 }
 
 traerdatos();
@@ -58,7 +81,6 @@ traerdatos();
 
 
 
-console.log("productos:", productos);
 
 
 
@@ -71,7 +93,6 @@ let productoold = "INFUSION"
 const dibujarProductos = () => {
 let contenedor = document.getElementById("container");
 contenedor.innerHTML = "";
-
 productos.forEach((producto, indice) => {
   let card = document.createElement("div");
   card.classList.add("card", "col-sm-12", "col-lg-3");
@@ -87,10 +108,7 @@ productos.forEach((producto, indice) => {
 });
 }
 
-
-console.log(indiceold);
-
-
+dibujarProductos()
 
 const agregarAlCarrito = (indice) => {
        let option = indice 
@@ -116,8 +134,10 @@ const agregarAlCarrito = (indice) => {
         contenedor1.appendChild(contenedor2);
       
 
+
       const agregarcarrtiostr= JSON.stringify(indice)
       localStorage.setItem("indice", agregarcarrtiostr)
+
 
 
         const button = document.getElementById('enviarInfo');
@@ -126,10 +146,6 @@ button.onclick = function click() {
   let dias = document.getElementById("dias").value;
   let veces = document.getElementById("veces").value;
   let option = indice
-  console.log(dias);
-  console.log(veces);
-  console.log(option);
-
 
   switch (option) {
     case "0":
@@ -145,9 +161,9 @@ button.onclick = function click() {
       productoold = "Infusion Antioxidante"
       break;  
     default:
-      console.log("error conversion text a number");
+      console.log("sw no aplicado2");
       break;
-  }
+  } 
 
 
       switch (option) {
@@ -155,9 +171,6 @@ button.onclick = function click() {
             let productocomprad = productos[0]
             receta = infurelajante(dias, veces)
             precio = compra(productocomprad.precio, receta)
-            console.log("Calculado receta de " + productocomprad.nombre + " para " + dias + " dias, con " + veces + " veces al dia");
-            console.log("hola, calculamos que necesitaras " + receta + "gramos");
-            console.log("el valor con envio es de $" + precio);
             let contenedo3 = document.getElementById("container");
             contenedo3.innerHTML = "";
             let contenedo4 = document.createElement("div");
@@ -178,8 +191,6 @@ button.onclick = function click() {
               
               cart.push({ productocomprado: productocomprad.nombre, valor: precio });
               
-              console.log("compra de carrito:",cart);
-
               let contened = document.getElementById("cart");
               contened.innerHTML = "";
                 cart.forEach((cart, indice) => {
@@ -221,7 +232,6 @@ button.onclick = function click() {
                 if (result.isConfirmed) {
               cart.splice(0);
               localStorage.removeItem("indice");
-              console.log("borrando localstorage",indice);
               let contened2 = document.getElementById("cart");
               contened2.innerHTML = "";
               let card2 = document.createElement("div");
@@ -245,7 +255,6 @@ button.onclick = function click() {
         let productocomprad2 = productos[1]
         /*OPTIMIZACION CON DESESRUCTURACION y SPREAD*/
           const [,productoventa] = productos
-          console.log(productoventa);
           const {id:idventa, nombre:nombreventa, precio:precioventa} = productoventa
           const datosventa = {
             ...precioventa,
@@ -254,13 +263,8 @@ button.onclick = function click() {
             vecesventa: veces,
           }
           
-          console.log(datosventa);
-          console.log(idventa, nombreventa, precioventa);
           receta = infurelajante(dias, veces)
           precio = compra(precioventa, receta)
-          console.log("Calculado receta de " + nombreventa + " para " + dias + " dias, con " + veces + " veces al dia");
-          console.log("hola, calculamos que necesitaras " + receta + "gramos");
-          console.log("el valor con envio es de $" + precio);
           let contenedo5 = document.getElementById("container");
           contenedo5.innerHTML = "";
           let contenedo6 = document.createElement("div");
@@ -279,7 +283,6 @@ button.onclick = function click() {
           button3.onclick = function click() {
             cart.push({ productocomprado: productocomprad2.nombre, valor: precio });
             
-            console.log(cart);
 
             let contened1 = document.getElementById("cart");
             contened1.innerHTML = "";
@@ -295,6 +298,10 @@ button.onclick = function click() {
                     `;
                 card2.innerHTML = html;
                 contened1.appendChild(card2);
+
+                /*LIBRERIA sweetalert2*/
+                Swal.fire('<h3>COMPRA REALIZADA</h3>')
+
                 localStorage.removeItem("indice")
                 dibujarProductos()
           });
@@ -304,18 +311,36 @@ button.onclick = function click() {
 
           const button6 = document.getElementById('nocomprar');
           button6.onclick = function click() {
-            cart.splice(0);
-            localStorage.removeItem("indice")
-            let contened2 = document.getElementById("cart");
-            contened2.innerHTML = "";
-            let card2 = document.createElement("div");
-            card2.classList.add("card", "col-sm-12", "col-lg-3");
-            let html = `
-                <h3>COMPRA CANCELADA</h3>
-                `;
-                card2.innerHTML = html;
-                contened2.appendChild(card2);
-            dibujarProductos()
+
+        /*LIBRERIA sweetalert2*/
+        Swal.fire({
+          title: 'Cancelar Compra',
+          text: "Estas seguro que deseas cancelar la compra",
+          icon: 'warning',
+          showCancelButton: true,
+          confirmButtonColor: '#3085d6',
+          cancelButtonColor: '#d33',
+          confirmButtonText: 'Si, Cancelar Compra'
+        }).then((result) => {
+          if (result.isConfirmed) {
+        cart.splice(0);
+        localStorage.removeItem("indice");
+        let contened2 = document.getElementById("cart");
+        contened2.innerHTML = "";
+        let card2 = document.createElement("div");
+        card2.classList.add("card", "col-sm-12", "col-lg-3");
+        let html = `
+            <h3>COMPRA CANCELADA</h3>
+            `;
+            card2.innerHTML = html;
+            contened2.appendChild(card2);
+        dibujarProductos()
+            Swal.fire(
+              'Compra Cancelada'
+            )               
+          }
+        })
+
           }
 
             break;
@@ -323,9 +348,6 @@ button.onclick = function click() {
           let productocomprad3 = productos[2]
           receta = infurelajante(dias, veces)
           precio = compra(productocomprad3.precio, receta)
-          console.log("Calculado receta de " + productocomprad3.nombre + " para " + dias + " dias, con " + veces + " veces al dia");
-          console.log("hola, calculamos que necesitaras " + receta + "gramos");
-          console.log("el valor con envio es de $" + precio);
           let contenedo7 = document.getElementById("container");
           contenedo7.innerHTML = "";
           let contenedo8 = document.createElement("div");
@@ -344,8 +366,6 @@ button.onclick = function click() {
           button4.onclick = function click() {
             cart.push({ productocomprado: productocomprad3.nombre, valor: precio });
             
-            console.log(cart);
-
             let contened2 = document.getElementById("cart");
             contened2.innerHTML = "";
               cart.forEach((cart, indice) => {
@@ -360,6 +380,10 @@ button.onclick = function click() {
                     `;
                 card2.innerHTML = html;
                 contened2.appendChild(card2);
+                
+                /*LIBRERIA sweetalert2*/
+                Swal.fire('<h3>COMPRA REALIZADA</h3>')
+                
                 localStorage.removeItem("indice")
                 dibujarProductos()
           });
@@ -369,22 +393,38 @@ button.onclick = function click() {
 
           const button7 = document.getElementById('nocomprar');
           button7.onclick = function click() {
-            cart.splice(0);
-            localStorage.removeItem("indice")
-            let contened2 = document.getElementById("cart");
-            contened2.innerHTML = "";
-            let card2 = document.createElement("div");
-            card2.classList.add("card", "col-sm-12", "col-lg-3");
-            let html = `
-                <h3>COMPRA CANCELADA</h3>
-                `;
-                card2.innerHTML = html;
-                contened2.appendChild(card2);
-            dibujarProductos()
+          /*LIBRERIA sweetalert2*/
+        Swal.fire({
+          title: 'Cancelar Compra',
+          text: "Estas seguro que deseas cancelar la compra",
+          icon: 'warning',
+          showCancelButton: true,
+          confirmButtonColor: '#3085d6',
+          cancelButtonColor: '#d33',
+          confirmButtonText: 'Si, Cancelar Compra'
+        }).then((result) => {
+          if (result.isConfirmed) {
+        cart.splice(0);
+        localStorage.removeItem("indice");
+        let contened2 = document.getElementById("cart");
+        contened2.innerHTML = "";
+        let card2 = document.createElement("div");
+        card2.classList.add("card", "col-sm-12", "col-lg-3");
+        let html = `
+            <h3>COMPRA CANCELADA</h3>
+            `;
+            card2.innerHTML = html;
+            contened2.appendChild(card2);
+        dibujarProductos()
+            Swal.fire(
+              'Compra Cancelada'
+            )               
+          }
+        })
+
           }
             break;
         default:
-            console.log("error calculo")
             dibujarProductos()
             break;
     }
@@ -396,59 +436,4 @@ button.onclick = function click() {
 
 /* OPTIMIZACON CODIGO */
 
-  indiceold === null ? dibujarProductos() : carritolleno()
-
-
-    function carritolleno () {
-    indice = indiceold
-    switch (indiceold) {
-      case "0":
-         productoold = "Infusion Relajante (Producto en carrito pendiente para finalizar)"
-        break;
-      case "1":
-        productoold = "Infusion Digestiva (Producto en carrito pendiente para finalizar)"
-        break;
-      case "2":
-          productoold = "Infusion Antioxidante (Producto en carrito pendiente para finalizar)"
-        break;  
-      default:
-        console.log("error conversion text a number");
-        break;
-    }
-    localStorage.removeItem("indice")
-    console.log("carro con productos");
-    console.log(indice);
-    agregarAlCarrito(indice)
-    localStorage.setItem("indice", indice) }
-
-/*   if (indiceold === null) {
-    console.log("carro vacio")
-    dibujarProductos()
-  }
-  else {
-  indice = indiceold
-  switch (indiceold) {
-    case "0":
-       productoold = "Infusion Relajante (Producto en carrito pendiente para finalizar)"
-      break;
-    case "1":
-      productoold = "Infusion Digestiva (Producto en carrito pendiente para finalizar)"
-      break;
-    case "2":
-        productoold = "Infusion Antioxidante (Producto en carrito pendiente para finalizar)"
-      break;  
-    default:
-      console.log("error conversion text a number");
-      break;
-  }
-  localStorage.removeItem("indice")
-  console.log("carro con productos");
-  console.log(indice);
-  agregarAlCarrito(indice)
-  localStorage.setItem("indice", indice)
-
-
-  }; */
-
-
- 
+  
